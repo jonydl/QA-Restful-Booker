@@ -27,10 +27,36 @@ test.describe('Booking room flows', () => {
     });
 
 
-    test('should book a single room', async ({ page }) => {
-        await homePage.goToBookingSection();
-        await homePage.selectCheckInDate( '01', '09', '2026' );
-    });
+    test('should book a room and assert success message', async ({ page } ) => {
+        const firstName : string = 'John';
+        const lastName : string = 'Doe';
+        const email : string = 'jdoe@hotmail.com';
+        const phone : string = '07030245655';
+        
+        await page.getByRole('link', { name: 'Book Now', exact: true }).click();
 
-    
+  
+        // Check in/out dates
+        await page.getByPlaceholder('Check-in date').click();
+        await page.getByRole('gridcell', { name: 'Choose Tuesday, 26 May' }).click();
+
+        await page.getByPlaceholder('Check-out date').click();
+        await page.getByRole('gridcell', { name: 'Choose Sunday, 31 May' }).click();
+        await page.getByRole('button', { name: 'Check Availability' }).click();
+
+        // Select a room
+        await page.getByRole('link', { name: 'Book now' }).nth(1).click();
+        await page.getByRole('button', { name: 'Reserve Now' }).click();
+
+        // Fill the booking form
+        await page.getByRole('textbox', { name: 'Firstname' }).fill(firstName);
+        await page.getByRole('textbox', { name: 'Lastname' }).fill(lastName);
+        await page.getByRole('textbox', { name: 'Email' }).fill(email);
+        await page.getByRole('textbox', { name: 'Phone' }).fill(phone);
+        await page.getByRole('button', { name: 'Reserve Now' }).click();
+
+        // Assert success message
+        await expect(page.getByRole('heading', { name: /booking confirmed/ })).toBeVisible();
+    });
 });
+
