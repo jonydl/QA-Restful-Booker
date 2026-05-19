@@ -1,34 +1,55 @@
-import { Page, Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { Page, expect } from "@playwright/test";
 
-export class HomePage extends BasePage {
+export class HomePage {
+    protected readonly page: Page;
 
-    //Locators assignment
-    readonly roomsLocator : Locator = this.page.locator('#navbarNav').getByRole('link', { name: 'Rooms' });
-    readonly bookingLocator : Locator = this.page.locator('#navbarNav').getByRole('link', { name: 'Booking' });
-    readonly amenitiesLocator : Locator = this.page.getByRole('link', { name: 'Amenities' });
-
-    constructor(page: Page) {
-        super(page);
+    constructor(page : Page){
+        this.page = page;
     }
 
-    // Home page navigation
-    // Click on Rooms
-    async clickOnRooms() {
-        await this.roomsLocator.click();
-        await new Promise(resolve => setTimeout)
+    //#region Home page navigation
+    async goToHomePage(){
+        await this.page.goto('https://automationintesting.online/');
+    }
+    async goToRoomsSection(){
+        await this.page.locator('#navbarNav').getByRole('link', { name: 'Rooms' });
+        await expect(this.page).toHaveURL('https://automationintesting.online/#rooms');
     }
 
-    // Click on Booking
-    async clickOnBooking() {
-        await this.bookingLocator.click();
+    async goToBookingSection(){
+        await this.page.locator('#navbarNav').getByRole('link', { name: 'Booking' });
+        await expect(this.page).toHaveURL('https://automationintesting.online/#booking');
     }
 
-    // Click on Amenities
+    async goToAmenitiesSection(){
+        await this.page.getByRole('link', { name: 'Amenities' });
+        await expect(this.page).toHaveURL('https://automationintesting.online/#amenities');
+    }
+
+    async goToLocationSection(){
+        await this.page.getByRole('link', { name: 'Location' });
+        await expect(this.page).toHaveURL('https://automationintesting.online/#location');
+    }
+
+    async goToContactSection(){
+        await this.page.locator('#navbarNav').getByRole('link', { name: 'Contact' });
+        await expect(this.page).toHaveURL('https://automationintesting.online/#contact');
+    }
+    //#endregion
     
-    // Click on Location
+    //#region Home page calendar
+    async selectCheckInDate(dayNumber: string, monthNumber: string, yearNumber: string){
+        // Press the calendar check-in date field
+        await this.page.getByRole('textbox').first().click();
 
-    // Click on Contact
+        await this.page.getByRole('textbox').first().fill(`${dayNumber}/${monthNumber}/${yearNumber}`);
+        await this.page.getByRole('textbox').first().press('Enter');
+    }
 
-    // Click on Admin
+    async selectCheckOutDate(date : string){
+        return;
+    }
+
+    //#endregion
+
 }
