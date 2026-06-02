@@ -1,7 +1,7 @@
-# UI (End-To-End User Journey)
+# UI/End-To-End
     Purpose: validate the real user flows through the application
 
-## P0 - Book a room
+## P0 - Book a single/double/suite room for a range of dates - @
 1. Open homepage
 2. Select Check-in 
 3. Select Check-out dates
@@ -12,12 +12,31 @@
 8. Click on 'Reserve Now'
 9. Assert booking summary message is visible
 
+## P0 - Book a single/double/suite room without pre-selected dates
+1. Open homepage
+2. Click on 'Book Now' under the Rooms section
+3. Insert the check-in and out dates
+4. Click 'Reserve Now'
+5. Fill the form (name, email, phone, etc)
+6. Click on 'Reserve Now'
+7. Assert booking summary message is visible
 
-### P1 - Contact Form
-1. Open the main page
+## P1 - Location and Contact information
+1. Open homepage
+2. Click on Location
+3. Assert Address, Phone and Email are visible
+
+## P1 - Contact Form Submission
+1. Open homepage
 2. Click on Contact
 3. Fill the form
 4. Submit
+5. Assert success message is submitted
+
+## P2 - Social Media Buttons
+1. Open homepage
+2. Click on Social Media
+3. Assert that the buttons redirect to the respective social media pages
 
 ----------------------------------------------------------
 

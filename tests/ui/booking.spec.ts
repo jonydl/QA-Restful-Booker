@@ -1,62 +1,51 @@
-// Core tests:
-// 1. Full booking flow (single, double and suite rooms)
-//  - Assert the success booking message
-// 2. Negative booking flows:
-//  - Cancelling the booking during the booking process
-//  - Asset the user is booking form returns to the room calendar view
-// 3. Change booking dates in the booking page and proceed with the booking
-//  - Room price recalculates when dates are changed
-
-// Edge cases:
-// 1. Dates for the room are older than the current date
-//  - Assert the booking is not possible
-// 2. Today's date is automatically highlighted
-// 3. A single date can not be selected in the booking calendar
-//  - Assert the booking for a single date is not possible
-
 import { test, expect } from '@playwright/test';
 import { HomePage } from '../../pages/HomePage';
 
-test.describe('Booking room flows', () => {
+let homePage : HomePage;
 
-    let homePage : HomePage;
-
-    test.beforeEach(async ({ page }) => {
-        homePage = new HomePage(page);
-        await homePage.goToHomePage();
-    });
-
-
-    test('should book a room and assert success message', async ({ page } ) => {
-        const firstName : string = 'John';
-        const lastName : string = 'Doe';
-        const email : string = 'jdoe@hotmail.com';
-        const phone : string = '07030245655';
-        
-        await page.getByRole('link', { name: 'Book Now', exact: true }).click();
-
-  
-        // Check in/out dates
-        await page.getByPlaceholder('Check-in date').click();
-        await page.getByRole('gridcell', { name: 'Choose Tuesday, 26 May' }).click();
-
-        await page.getByPlaceholder('Check-out date').click();
-        await page.getByRole('gridcell', { name: 'Choose Sunday, 31 May' }).click();
-        await page.getByRole('button', { name: 'Check Availability' }).click();
-
-        // Select a room
-        await page.getByRole('link', { name: 'Book now' }).nth(1).click();
-        await page.getByRole('button', { name: 'Reserve Now' }).click();
-
-        // Fill the booking form
-        await page.getByRole('textbox', { name: 'Firstname' }).fill(firstName);
-        await page.getByRole('textbox', { name: 'Lastname' }).fill(lastName);
-        await page.getByRole('textbox', { name: 'Email' }).fill(email);
-        await page.getByRole('textbox', { name: 'Phone' }).fill(phone);
-        await page.getByRole('button', { name: 'Reserve Now' }).click();
-
-        // Assert success message
-        await expect(page.getByRole('heading', { name: /booking confirmed/ })).toBeVisible();
-    });
+test.beforeEach(async ({ page }) => {
+    homePage = new HomePage(page);
+    await homePage.goto();
+    await homePage.expectLoadedPage();
 });
 
+test.describe('Booking flows', () => {
+
+    test('should book a single room with preselected dates', async ({ page }) => {
+
+        // Asset the room card is visible and press book now button
+        await expect(page.locator('div').filter({ hasText: 'SingleAenean porttitor mauris' }).nth(4)).toBeVisible();
+        await page.getByRole('link', { name: 'Book now' }).nth(1).click();
+
+        // Assert Single room page, submit booking dates
+        await homePage.bookRoomWithDates(1, '2026-06-19', '2026-06-21');
+        await expect(page.url()).toContain('/reservation/');
+        await page.getByRole('button', { name: 'Reserve Now' }).click();
+
+        // Fill booking form and submit
+        await page.getByRole('textbox', { name: 'Firstname' }).fill('John');
+        await page.getByRole('textbox', { name: 'Lastname' }).fill('Doe');
+        await page.getByRole('textbox', { name: 'Email' }).fill('jd.test@testemail.com');
+        await page.getByRole('textbox', { name: 'Phone' }).fill('784022345989');
+        await page.getByRole('button', { name: 'Reserve Now' }).click();
+
+        // Assert booking confirmation element to show
+        await expect(await page.getByText('Booking ConfirmedYour booking')).toBeVisible({ timeout: 5000 });
+    });
+
+    // User Journeys P0
+        // Book a single room given the range
+        //     - Assert = Booking confirmation
+        // Book a double room given the range
+        //     - Assert = Booking confirmation
+        // Book a suite room given the range
+        //     - Assert = Booking confirmation
+
+
+        // Book a single room without dates preselected
+        //     - Assert = Booking confirmation
+        // Book a double room without dates preselected
+        //     - Assert = Booking confirmation
+        // Book a suite room without dates preselected
+        //     - Assert = Booking confirmation
+});
